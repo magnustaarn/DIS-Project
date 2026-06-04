@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Leaderboard — WikiSpeedrun{% endblock %}
+
+{% block content %}
+<h1>Leaderboard</h1>
+<p class="subtitle">Top 50 completed runs, sorted by fewest clicks then fastest time.</p>
+
+{% if runs %}
+<div class="card" style="padding:0; overflow:hidden;">
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Clicks</th>
+        <th>Time</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in runs %}
+      <tr>
+        <td class="rank
+          {% if loop.index == 1 %}rank-1
+          {% elif loop.index == 2 %}rank-2
+          {% elif loop.index == 3 %}rank-3{% endif %}">
+          {{ loop.index }}
+        </td>
+        <td><strong>{{ row[0] }}</strong></td>
+        <td style="color:var(--mid);">{{ row[1]|replace('_',' ') }}</td>
+        <td style="color:var(--mid);">{{ row[2]|replace('_',' ') }}</td>
+        <td>
+          <span style="font-family:var(--serif); font-size:1.1rem;">{{ row[3] }}</span>
+          <span style="color:var(--mid); font-size:11px;"> clicks</span>
+        </td>
+        <td>{{ row[4] }}s</td>
+        <td style="color:var(--mid); font-size:12px;">{{ row[5] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  <div class="card">
+    <p style="color:var(--mid); font-size:13px; text-align:center; padding:20px 0;">
+      No completed runs yet.<br><br>
+      {% if user %}
+        <a href="{{ url_for('game.play_setup') }}" class="btn">Be the First →</a>
+      {% else %}
+        <a href="{{ url_for('auth.register') }}" class="btn">Register to Play</a>
+      {% endif %}
+    </p>
+  </div>
+{% endif %}
+{% endblock %}

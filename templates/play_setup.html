@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}New Run — WikiSpeedrun{% endblock %}
+
+{% block content %}
+<h1>New Run</h1>
+<p class="subtitle">Choose your start and target article</p>
+
+<div class="card" style="max-width: 560px;">
+  <form method="POST">
+    <label for="start_page">Start Article</label>
+    <input type="text" id="start_page" name="start_page">
+
+    <label for="end_page">Target Article</label>
+    <input type="text" id="end_page" name="end_page">
+
+    <p style="font-size:11px; color:var(--mid); margin-bottom:18px;">
+      Use exact Wikipedia article titles (underscores or spaces both work).
+    </p>
+
+    <button type="submit" class="btn">Start Run →</button>
+  </form>
+</div>
+{% endblock %}

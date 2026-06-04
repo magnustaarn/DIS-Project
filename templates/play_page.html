@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% block title %}{{ title|replace('_',' ') }} — WikiSpeedrun{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* Override main max-width for game view */
+  main { max-width: 1100px; }
+
+  .game-layout {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* HUD */
+  .hud {
+    position: sticky;
+    top: 24px;
+  }
+
+  .hud-target {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 20px 22px;
+    margin-bottom: 16px;
+  }
+
+  .hud-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.5;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .hud-title {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    line-height: 1.2;
+  }
+
+  .hud-stats {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    padding: 16px 22px;
+    margin-bottom: 16px;
+  }
+
+  .hud-stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 13px;
+  }
+
+  .hud-stat:last-child { border-bottom: none; }
+
+  .hud-stat-val {
+    font-weight: 600;
+    font-family: var(--serif);
+    font-size: 1.1rem;
+  }
+
+  /* Article area */
+  .article-header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+
+  .article-title {
+    font-family: var(--serif);
+    font-size: 2.2rem;
+    margin-bottom: 4px;
+  }
+
+  .article-hint {
+    font-size: 11px;
+    color: var(--mid);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* Links grid */
+  .links-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .wiki-link {
+    display: block;
+    padding: 9px 14px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.12s;
+    letter-spacing: 0.01em;
+  }
+
+  .wiki-link:hover {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+
+  .wiki-link.target-link {
+    background: #e8f4e8;
+    border-color: #4a9e4a;
+    color: #2a6e2a;
+    font-weight: 600;
+  }
+
+  .wiki-link.target-link:hover {
+    background: #2a6e2a;
+    color: white;
+  }
+
+  /* Win banner */
+  .win-banner {
+    background: var(--accent);
+    color: white;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .win-banner h2 {
+    font-family: var(--serif);
+    font-size: 2rem;
+    margin-bottom: 8px;
+    color: white;
+  }
+
+  .win-banner p { font-size: 13px; opacity: 0.85; margin-bottom: 16px; }
+
+  /* Timer */
+  #timer {
+    font-variant-numeric: tabular-nums;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% if won %}
+<div class="win-banner">
+  <h2>🎉 You made it!</h2>
+  <p>You reached <strong>{{ title|replace('_',' ') }}</strong> in <strong>{{ clicks }} click{{ 's' if clicks != 1 }}</strong>.</p>
+  <a href="{{ url_for('game.finish_run') }}" class="btn" style="background:white; color:var(--accent);">Save Result →</a>
+</div>
+{% endif %}
+
+<div class="game-layout">
+  <!-- Article -->
+  <div>
+    <div class="article-header">
+      <div class="article-title">{{ title|replace('_', ' ') }}</div>
+      <div class="article-hint">
+        <a href="https://en.wikipedia.org/wiki/{{ title }}" target="_blank" style="color:var(--mid); font-size:11px;">
+          ↗ View on Wikipedia
+        </a>
+      </div>
+    </div>
+
+    <div class="links-grid" id="links-grid">
+      {% for link in links|sort %}
+        <a href="{{ url_for('game.click_link', title=link) }}"
+           class="wiki-link {% if link == end_title %}target-link{% endif %}"
+           data-title="{{ link|lower }}">
+          {{ link|replace('_', ' ') }}
+          {% if link == end_title %} ← TARGET{% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hud-target">
+      <span class="hud-label">Target</span>
+      <div class="hud-title">{{ end_title|replace('_', ' ') }}</div>
+    </div>
+
+    <div class="hud-stats">
+      <div class="hud-stat">
+        <span>Clicks</span>
+        <span class="hud-stat-val">{{ clicks }}</span>
+      </div>
+      <div class="hud-stat">
+        <span>Time</span>
+        <span class="hud-stat-val" id="timer">0:00</span>
+      </div>
+      <div class="hud-stat">
+        <span>Links here</span>
+        <span class="hud-stat-val">{{ links|length }}</span>
+      </div>
+    </div>
+
+    <a href="{{ url_for('game.play_setup') }}" class="btn btn-outline" style="width:100%; text-align:center; display:block; margin-bottom:8px;">
+      Give Up
+    </a>
+  </div>
+</div>
+
+<script>
+  // Timer
+  const startTime = Date.now();
+  const timerEl = document.getElementById('timer');
+  setInterval(() => {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const m = Math.floor(elapsed / 60);
+    const s = elapsed % 60;
+    timerEl.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+  }, 500);
+</script>
+{% endblock %}

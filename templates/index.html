@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}WikiSpeedrun — Home{% endblock %}
+
+{% block content %}
+<h1>Wikipedia<br>Speedrun</h1>
+
+<div class="stats-row">
+  <div class="stat-box">
+    <span class="stat-num">{{ page_count }}</span>
+    <span class="stat-label">Pages Indexed</span>
+  </div>
+  <div class="stat-box">
+    <span class="stat-num">{{ run_count }}</span>
+    <span class="stat-label">Runs Completed</span>
+  </div>
+</div>
+
+{% if user %}
+  <a href="{{ url_for('game.play_setup') }}" class="btn">Start a Run →</a>
+{% else %}
+  <a href="{{ url_for('game.play_setup') }}" class="btn">Start a Run →</a>
+{% endif %}
+
+<hr class="rule">
+
+<h2>Top Runs</h2>
+{% if leaderboard %}
+<div class="card" style="padding:0;">
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Clicks</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in leaderboard %}
+      <tr>
+        <td class="rank {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% endif %}">
+          {{ loop.index }}
+        </td>
+        <td>{{ row[0] }}</td>
+        <td style="color:var(--mid)">{{ row[1]|replace('_', ' ') }}</td>
+        <td style="color:var(--mid)">{{ row[2]|replace('_', ' ') }}</td>
+        <td><strong>{{ row[3] }}</strong></td>
+        <td>{{ row[4] }}s</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  <p style="color:var(--mid); font-size:13px;">No completed runs yet. Be the first!</p>
+{% endif %}
+{% endblock %}

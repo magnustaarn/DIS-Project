@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Run Complete — WikiSpeedrun{% endblock %}
+
+{% block content %}
+{% if not saved %}
+  {# ── Username form ── #}
+  <h1>You made it!</h1>
+  <p class="subtitle">Enter a name to save your run to the leaderboard.</p>
+
+  <div class="card" style="max-width:500px;">
+    <div style="text-align:center; margin-bottom:28px;">
+      <div style="font-family:var(--serif); font-size:5rem; line-height:1;">{{ clicks }}</div>
+      <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:var(--mid);">
+        Click{{ 's' if clicks != 1 }}
+      </div>
+    </div>
+
+    <form method="POST">
+      <label for="username">Your name</label>
+      <input type="text" id="username" name="username"
+             placeholder="Anonymous" maxlength="50" autocomplete="off">
+      <button type="submit" class="btn" style="width:100%;">Save Result →</button>
+    </form>
+
+    <p style="margin-top:16px; text-align:center;">
+      <a href="{{ url_for('game.play_setup') }}" style="font-size:12px; color:var(--mid);">
+        Skip &amp; play again
+      </a>
+    </p>
+  </div>
+
+{% else %}
+  {# ── Saved confirmation ── #}
+  <h1>Run Saved</h1>
+  <p class="subtitle">Good run, {{ username }}.</p>
+
+  <div class="card" style="max-width:500px; text-align:center; padding:40px;">
+    <div style="font-family:var(--serif); font-size:5rem; margin-bottom:8px;">{{ clicks }}</div>
+    <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:var(--mid); margin-bottom:32px;">
+      Click{{ 's' if clicks != 1 }}
+    </div>
+
+    <div style="display:flex; margin-bottom:32px;">
+      <div style="flex:1; border:1px solid var(--rule); padding:16px;">
+        <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--mid); margin-bottom:6px;">From</div>
+        <div style="font-family:var(--serif); font-size:1.1rem;">{{ start_title|replace('_',' ') }}</div>
+      </div>
+      <div style="width:1px; background:var(--rule);"></div>
+      <div style="flex:1; border:1px solid var(--rule); padding:16px;">
+        <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--mid); margin-bottom:6px;">To</div>
+        <div style="font-family:var(--serif); font-size:1.1rem;">{{ end_title|replace('_',' ') }}</div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:12px; justify-content:center;">
+      <a href="{{ url_for('game.play_setup') }}" class="btn">Play Again</a>
+      <a href="{{ url_for('game.leaderboard') }}" class="btn btn-outline">Leaderboard</a>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}
