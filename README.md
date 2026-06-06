@@ -13,7 +13,7 @@ pip
 Clone the repository and install the required Python packages:
 ```bash
 git clone <repository-url>
-cd DIS-Project
+cd DIS-Project-main
 pip install -r requirements.txt
 ```
 ## Database Setup
