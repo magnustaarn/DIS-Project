@@ -4,7 +4,7 @@
 
 Python 3.11 or newer
 
-PostgreSQL 16
+PostgreSQL 18
 
 pip
 
