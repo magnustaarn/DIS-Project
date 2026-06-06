@@ -14,7 +14,7 @@ Clone the repository and install the required Python packages:
 ```bash
 git clone <repository-url>
 cd wikipedia-speedrun
-pip install -r requirements.txt
+pip install -r Requirements.txt
 ```
 ## Database Setup
 
