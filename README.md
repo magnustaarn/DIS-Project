@@ -13,8 +13,8 @@ pip
 Clone the repository and install the required Python packages:
 ```bash
 git clone <repository-url>
-cd wikipedia-speedrun
-pip install -r Requirements.txt
+cd DIS-Project
+pip install -r requirements.txt
 ```
 ## Database Setup
 
