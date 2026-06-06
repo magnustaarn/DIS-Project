@@ -20,7 +20,7 @@ pip install -r requirements.txt
 
 Create a PostgreSQL database:
 ```sql
-CREATE DATABASE wikipedia_speedrun;
+CREATE DATABASE wikipedia_speedrun; (if that doesn't work try CREATE DATABASE postgres;)
 ```
 Connect to the database and execute the schema script:
 ```bash
